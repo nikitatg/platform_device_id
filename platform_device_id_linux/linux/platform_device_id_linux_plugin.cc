@@ -36,6 +36,11 @@ static void platform_device_id_linux_plugin_handle_method_call(
     rstream = popen("dmidecode -s system-uuid","r");
     fread(buf, sizeof(char), sizeof(buf), rstream);
     pclose(rstream);
+    if(buf[0] == 0) {
+      rstream = popen("cat /etc/machine-id", "r");
+      fread(buf, sizeof(char), sizeof(buf), rstream);
+      pclose(rstream);
+    }
     g_autofree gchar *deviceId = g_strdup_printf("%s", buf);
     g_autoptr(FlValue) result = fl_value_new_string(deviceId);
     response = FL_METHOD_RESPONSE(fl_method_success_response_new(result));
